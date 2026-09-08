@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.vite/
+
+# Local build config — holds your own server address. .env.example is the
+# template that does get committed.
+.env
+.env.local
+
+# Cubism runtime — fetched at setup, not ours to redistribute.
+# See README: npm run setup
+public/core/
+vendor/CubismWebFramework/
+vendor/Core/
+
+# Every installed character. The engine ships with no models; whatever you put
+# here belongs to whoever made it, so it never enters this repo.
+public/models/
+
+# Rust build output
+src-tauri/target/
+src-tauri/gen/
+
+# Anything rendered from a loaded model — captures, contact sheets, atlas dumps.
+# Those frames are the character's art, so they belong with the model, not here.
+/*.png
+*.log
+.keys/

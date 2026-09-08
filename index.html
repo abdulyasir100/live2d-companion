@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live2D Companion — spike</title>
+    <script src="/core/live2dcubismcore.min.js"></script>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #14161c;
+        color: #e6e8ee;
+        font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      #stage { display: grid; gap: 12px; justify-items: center; }
+      canvas {
+        width: 520px;
+        height: 720px;
+        background:
+          repeating-conic-gradient(#1b1e26 0% 25%, #191c23 0% 50%) 50% / 24px 24px;
+        border-radius: 10px;
+      }
+
+      /* Pet mode: the window is the character. Nothing else may paint, or the
+         transparent window shows a rectangle instead of her silhouette. */
+      html.pet, html.pet body { background: transparent; }
+      html.pet body { display: block; overflow: hidden; }
+      html.pet #stage { gap: 0; }
+      html.pet #hud, html.pet #log { display: none; }
+      html.pet canvas {
+        width: 100vw;
+        height: 100vh;
+        background: none;
+        border-radius: 0;
+      }
+      html.pet.through canvas { opacity: 0.55; }
+
+      /* Mobile is a normal fullscreen app, so it needs a real backdrop rather
+         than the transparency the desktop pet relies on. */
+      html.mobile, html.mobile body { background: #14161c; }
+      #hud { display: flex; gap: 8px; flex-wrap: wrap; max-width: 620px; justify-content: center; }
+      button {
+        font: inherit;
+        color: #cfd4e2;
+        background: #232733;
+        border: 1px solid #333949;
+        border-radius: 6px;
+        padding: 4px 9px;
+        cursor: pointer;
+      }
+      button:hover { background: #2b3040; }
+      #log { color: #8b93a7; white-space: pre-wrap; text-align: center; min-height: 3em; }
+      #log b { color: #7ee0a4; }
+      #log i { color: #ff8f8f; font-style: normal; }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="view" width="1040" height="1440"></canvas>
+      <div id="hud"></div>
+      <div id="log">booting…</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
