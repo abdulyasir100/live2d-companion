@@ -38,18 +38,57 @@ async function json<T>(url: string): Promise<T | null> {
 }
 
 /**
+ * Coerces whatever `index.json` actually contained into a list of slugs.
+ *
+ * This file is hand-written when installing a model, so it gets the shape
+ * wrong in predictable ways. A bare `"name"` is unambiguous enough to accept;
+ * anything else earns a message naming the expected format, because the
+ * alternative is a `map is not a function` stack trace at boot.
+ */
+function toSlugs(raw: unknown, onProblem: (msg: string) => void): string[] {
+  if (typeof raw === 'string') {
+    onProblem(`models/index.json should be a list: ["${raw}"], not "${raw}"`);
+    return [raw];
+  }
+  if (!Array.isArray(raw)) {
+    onProblem('models/index.json must be a list of directory names, e.g. ["my-character"]');
+    return [];
+  }
+  const good = raw.filter((s): s is string => typeof s === 'string' && s.length > 0);
+  if (good.length !== raw.length) {
+    onProblem('models/index.json: every entry must be a directory name in quotes');
+  }
+  return good;
+}
+
+/**
  * `index.json` is a flat list of directory names. A web build cannot list a
  * directory, so the installer writes this file.
  */
-export async function loadRegistry(root = MODELS_ROOT): Promise<Character[]> {
-  const slugs = await json<string[]>(`${root}/index.json`);
-  if (!slugs?.length) return [];
+export async function loadRegistry(
+  onProblem: (msg: string) => void = () => {},
+  root = MODELS_ROOT
+): Promise<Character[]> {
+  const raw = await json<unknown>(`${root}/index.json`);
+  if (raw === null) {
+    onProblem(`no ${root}/index.json — see README, "Adding a character"`);
+    return [];
+  }
 
   const loaded = await Promise.all(
-    slugs.map(async (slug) => {
+    toSlugs(raw, onProblem).map(async (slug) => {
       const dir = `${root}/${slug}`;
       const c = await json<Character>(`${dir}/character.json`);
-      if (!c?.costumes?.length) return null;
+      // say which character failed: index.json lists it, so a miss is a typo
+      // in the name or a file that was never written
+      if (c === null) {
+        onProblem(`${slug}: no character.json in ${dir} (or it isn't valid JSON)`);
+        return null;
+      }
+      if (!c.costumes?.length) {
+        onProblem(`${slug}: character.json has no "costumes" entries`);
+        return null;
+      }
       return { ...c, id: c.id || slug, dir };
     })
   );

@@ -71,12 +71,20 @@ async function main() {
   log(`Core ${Live2DCubismCore.Version.csmGetVersion()}, ` +
       `newest moc3 it supports: ${Live2DCubismCore.Version.csmGetLatestMocVersion()}`);
 
-  const characters = await loadRegistry();
+  // a bad registry is the first thing a new install hits, so say what is
+  // wrong on screen rather than only in the console
+  const problems: string[] = [];
+  const characters = await loadRegistry((msg) => {
+    problems.push(msg);
+    fail(msg);
+    report(`registry: ${msg}`);
+  });
   if (!characters.length) {
     report('no models installed under public/models/');
-    return fail(
-      'No characters installed. Add one under public/models/ — see README.'
-    );
+    if (!problems.length) {
+      fail('No characters installed. Add one under public/models/ — see README.');
+    }
+    return;
   }
 
   const character =

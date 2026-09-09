@@ -37,7 +37,7 @@ Everything under `public/models/` is yours and is never committed.
 
 ```
 public/models/
-  index.json              ["my-character"]
+  index.json              (the registry — see below)
   my-character/
     character.json
     costumes/
@@ -53,7 +53,15 @@ public/models/
     voice/greet.wav                 (optional)
 ```
 
-`character.json`:
+`public/models/index.json` — a JSON **array** of directory names. A web build
+can't enumerate a folder, so this file is the registry. One entry per character,
+even if you only have one:
+
+```json
+["my-character"]
+```
+
+`public/models/my-character/character.json`:
 
 ```json
 {
@@ -68,11 +76,9 @@ public/models/
 }
 ```
 
-`motions/index.json` is a list of `{ name, file, duration, loop }`. Omit the
-whole `motions` key and she still blinks, breathes and lip-syncs.
-
-`index.json` at the root of `public/models/` lists the character directories —
-a web build can't enumerate a folder, so this file is the registry.
+`motions/index.json` is a different file — a list of
+`{ name, file, duration, loop }`, inside the character directory. Omit the whole
+`motions` key and she still blinks, breathes and lip-syncs.
 
 Pick which character and costume to show:
 
