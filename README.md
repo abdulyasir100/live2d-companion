@@ -19,7 +19,9 @@ audio you feed her.
 
 ## Prerequisites
 
-- **Node 18+** — for everything.
+- **Node 20.19+ or 22.12+** — required by Vite 8. An older Node fails at
+  `npm run dev`, which Tauri then reports as
+  `beforeDevCommand ... terminated with a non-zero status code`.
 - **Rust 1.77.2+** — only for the desktop and Android app. Install via
   [rustup](https://rustup.rs). `npm run dev` runs in a browser and needs no Rust
   at all, so you can start there while this installs.
@@ -240,6 +242,11 @@ loose files, so don't be alarmed that the APK's `assets/` looks empty.
 installed, or your shell hasn't picked it up yet. Install
 [rustup](https://rustup.rs), then open a new terminal. `npm run dev` works
 without it in the meantime.
+
+**`beforeDevCommand ... terminated with a non-zero status code`** — Tauri is
+reporting that `npm run dev` failed; the real error is printed above it. Run
+`npm run dev` on its own to see it. Most often it's Node being too old for
+Vite 8 — check `node -v` against the version above.
 
 **`slugs.map is not a function`** — `public/models/index.json` holds a bare
 string. It must be an array: `["my-character"]`, not `"my-character"`.

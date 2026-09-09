@@ -1,7 +1,5 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use tauri::Manager;
-
 /// Whether the window currently lets clicks pass through to whatever is behind it.
 static CLICK_THROUGH: AtomicBool = AtomicBool::new(false);
 
