@@ -17,13 +17,33 @@ audio you feed her.
 - System tray: show/hide, click-through, quit
 - Scroll to resize, drag to move, `Ctrl+Alt+L` to make her click-through
 
+## Prerequisites
+
+- **Node 18+** — for everything.
+- **Rust 1.77.2+** — only for the desktop and Android app. Install via
+  [rustup](https://rustup.rs). `npm run dev` runs in a browser and needs no Rust
+  at all, so you can start there while this installs.
+
+Tauri also needs a system toolchain, which differs per platform — the
+[Tauri prerequisites page](https://v2.tauri.app/start/prerequisites/) is the
+authority, but in short:
+
+| OS | Also needed |
+|---|---|
+| Windows | Visual Studio Build Tools with the C++ workload. WebView2 ships with Win10/11 |
+| macOS | `xcode-select --install` |
+| Linux | `webkit2gtk-4.1`, `libxdo`, `libayatana-appindicator3`, `librsvg2` and their `-dev` packages |
+
+After installing Rust, **open a new terminal** — the installer edits `PATH`, and
+an already-open shell won't see `cargo` until it restarts.
+
 ## Setup
 
 ```bash
 npm install
 npm run setup     # fetches the Cubism runtime (not redistributed here)
-npm run dev       # browser harness at 127.0.0.1:5180
-npm run tauri dev # the actual desktop pet
+npm run dev       # browser harness at 127.0.0.1:5180 — no Rust needed
+npm run tauri dev # the actual desktop pet — needs Rust
 ```
 
 `npm run setup` downloads the Cubism Core from Live2D's CDN and clones the
@@ -213,6 +233,24 @@ apksigner verify --print-certs app-universal-release.apk
 
 The frontend is compiled *into* `lib/arm64-v8a/libapp_lib.so`, not stored as
 loose files, so don't be alarmed that the APK's `assets/` looks empty.
+
+## Troubleshooting
+
+**`failed to run 'cargo metadata' ... program not found`** — Rust isn't
+installed, or your shell hasn't picked it up yet. Install
+[rustup](https://rustup.rs), then open a new terminal. `npm run dev` works
+without it in the meantime.
+
+**`slugs.map is not a function`** — `public/models/index.json` holds a bare
+string. It must be an array: `["my-character"]`, not `"my-character"`.
+
+**"No characters installed"** — either `public/models/index.json` is missing, or
+a name in it doesn't match a folder beside it. The on-screen log names the
+character it couldn't load.
+
+**Model loads but nothing is drawn** — the moc3 is probably v6, exported from
+Cubism 5.3. The pinned Core supports up to v5; re-export targeting an older
+moc3 version.
 
 ## Licence
 
